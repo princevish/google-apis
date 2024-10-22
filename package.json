@@ -1,0 +1,56 @@
+{
+  "name": "@princevish/google-apis",
+  "version": "0.1.1",
+  "author": "Prince Vishwakarma <princevworld@gmail.com>",
+  "description": "This NPM Package Template provides a comprehensive starting point for developing and publishing your own NPM packages. It includes a basic setup with essential configurations to help streamline the development process, ensuring your package is ready for the NPM registry with ease and efficiency.",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/princevish/google-apis.git",
+    "type": "git"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/princevish"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/princevish/google-apis#readme",
+  "bugs": {
+    "url": "https://github.com/princevish/google-apis/issues"
+  },
+  "keywords": [
+    "npm",
+    "package",
+    "template"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "lint": "tsc",
+    "build": "tsup",
+    "version:add": "changeset add",
+    "version:commit": "changeset version",
+    "version:publish": "changeset publish",
+    "publish": "npm publish --access public",
+    "release": "npm run lint && npm run build && npm run version:add && npm run version:commit && npm run version:publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.12.7",
+    "husky": "^9.0.11",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "crypto": "^1.0.1",
+    "google-auth-library": "^9.14.2"
+  }
+}
