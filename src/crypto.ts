@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const ENCRYPTION_KEY = "0123456789abcdef";
+const ENCRYPTION_KEY ="72f5be6837c5954158f3f5563abd964f264ccadf34b7e2786643da89269b2909";
 const algorithm = "aes-256-cbc";
 
 export class Crypto {

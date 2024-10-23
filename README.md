@@ -1,59 +1,152 @@
-# NPM Package Template
+# Google APIs Node.js Client
 
-This NPM Package Template provides a comprehensive starting point for developing and publishing your own NPM packages. It includes a basic setup with essential configurations to help streamline the development process, ensuring your package is ready for the NPM registry with ease and efficiency.
+## Overview
 
-## Features
+`@princevish/google-apis` is a Node.js client library that simplifies accessing the latest Google APIs, including Google Analytics and Google Search Console. It provides easy-to-use methods to interact with these services using URL-based queries. The library also includes built-in support for OAuth 2.0 authentication, API keys, and JWT tokens, ensuring secure and efficient interaction with Google APIs.
 
-- **Easy Setup**: Quick start with minimal configuration.
-- **ESLint & Prettier**: Pre-configured for code quality and formatting.
-- **Continuous Integration**: Template includes GitHub Actions for CI/CD.
-- **Documentation**: Basic README setup to kickstart your documentation.
+### Key Features:
+- Latest Google API Support: Works with the latest versions of Google APIs.
+- Easy-to-use functions for Google APIs like Analytics and Search Console.
+- OAuth 2.0 integration for secure authentication.
+- Automatic token refresh management.
+- Simple API query building and request handling using `axios`.
 
-## Prerequisites
+## Installation
 
-Before you begin, ensure you have the following installed:
-- Node.js (v12.x or later)
-- npm (v6.x or later)
+```bash
+npm install @princevish/google-apis
+```
 
-## Getting Started
+## Usage
 
-To use this template for your project, follow these steps:
+### Example: OAuth 2.0 Setup
 
-1. ** kickstart your project **
+```javascript
+import { ClientGoogleApi } from "@princevish/google-apis";
+import express from "express";
 
-   ```bash
-   npx @princevish/npm-package-template your-package-name
-   cd your-package-name
-   ```
+const app = express();
+const client = new ClientGoogleApi({
+  client_id: process.env.CLIENT_ID,
+  client_secret: process.env.CLIENT_SECRET,
+  redirect_uris: process.env.REDIRECT_URIS,
+});
 
-2. ** Building the Package **
-   - After you have completed developing your package, you can build it to NPM.
-   ```bash
-      npm run lint
-      npm run build
-      npm run version:add
-      npm run version:commit
-   ```
+// Redirect users to the OAuth2 authorization URL
+app.get("/", async (req, res) => {
+  const url = await client.getVerificationUrl();
+  res.redirect(url);
+});
 
-3. ** Publishing to NPM **
-   - After you have completed building package, you can publish it to NPM. Make sure you have an NPM account and are logged in to your NPM CLI.
-   ```bash
-      npm login
-      npm run release
-   ```
+// Handle OAuth2 callback
+app.get("/callback", async (req, res) => {
+  const code = req.query.code;
+  const token = await client.getAccessToken(code);
+  res.send(token);
+});
 
-# Contributing
+// Fetch Google Analytics data
+app.get("/analytics", async (req, res) => {
+  const data = await client.getAnalyticsData({
+    propertyId: "PROPERTY_ID",
+    query: {
+      startDate: "2024-08-01",
+      endDate: "2024-10-01",
+      metrics: ["sessions"],
+      dimensions: ["country"],
+    },
+  });
+  res.send(data);
+});
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+// Fetch Google Search Console data
+app.get("/search-console", async (req, res) => {
+  const data = await client.getSearchConsoleData({
+    siteUrl: process.env.SITE_URL,
+    query: {
+      startDate: "2024-08-01",
+      endDate: "2024-10-01",
+      dimensions: ["query", "page"],
+    },
+  });
+  res.send(data);
+});
 
-1. **Fork the Project**
-2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
-5. **Open a Pull Request**
+app.listen(8080, () => {
+  console.log("Listening on port 8080");
+});
+```
 
-# License
+### API Methods
+
+#### 1\. `getVerificationUrl()`
+
+Generates a URL for the user to visit and authenticate their Google account.
+
+```javascript
+const url = client.getVerificationUrl();
+```
+
+#### 2\. `getAccessToken(code)`
+
+Exchanges an authorization code for an access token.
+
+```javascript
+const token = await client.getAccessToken("AUTH_CODE_OR_REDIRECT_URL");
+```
+
+#### 3\. `getAnalyticsData({ propertyId, query })`
+
+Fetches Google Analytics data.
+
+```javascript
+const analyticsData = await client.getAnalyticsData({
+  propertyId: "PROPERTY_ID",
+  query: {
+    startDate: "2024-08-01",
+    endDate: "2024-10-01",
+    metrics: ["sessions"],
+    dimensions: ["country"],
+  },
+});
+```
+
+#### 4\. `getSearchConsoleData({ siteUrl, query })`
+
+Fetches data from Google Search Console for a given site URL.
+
+```javascript
+const searchConsoleData = await client.getSearchConsoleData({
+  siteUrl: "https://example.com",
+  query: {
+    startDate: "2024-08-01",
+    endDate: "2024-10-01",
+    dimensions: ["query", "page"],
+  },
+});
+```
+
+## Authentication Methods
+
+   **OAuth 2.0**: Supports user consent flows and token refreshing. Ideal for accessing data on behalf of users.
+
+
+## Examples
+
+Detailed examples are available in the `examples` folder of the repository.
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+Feel free to explore the examples and extend this library to other Google APIs!
+
+---
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 Happy Coding! 🚀
+
+Made with ❤️ by [@princevish](https://github.com/princevish)

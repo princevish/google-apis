@@ -2,13 +2,7 @@ import { OAuth2Client } from "google-auth-library";
 import axios, { AxiosError } from "axios";
 import { Store } from "./store";
 
-export interface AnalyticsDataQuery {
-  dateRanges: { startDate: string; endDate: string }[];
-  metrics: { name: string }[];
-  dimensions: { name: string }[];
-}
-
-export interface SearchConsoleDataQuery {
+export interface Query {
   startDate: string;
   endDate: string;
   dimensions: string[];
@@ -23,15 +17,15 @@ export interface Keys {
 
 export interface AnalyticsData {
   propertyId: string;
-  query: AnalyticsDataQuery;
+  query: Query;
 }
 
 export interface SearchConsoleData {
   siteUrl: string;
-  query: SearchConsoleDataQuery;
+  query: Query;
 }
 
-class ClientGoogleApi extends Store {
+export class ClientGoogleApi extends Store {
   private oauth2Client: OAuth2Client;
   private scope: string[] = [
     "https://www.googleapis.com/auth/webmasters.readonly",
@@ -52,6 +46,7 @@ class ClientGoogleApi extends Store {
    */
   constructor(keys: Keys) {
     super();
+    this.validateKeys(keys);
     this.oauth2Client = new OAuth2Client(
       keys.client_id,
       keys.client_secret,
@@ -60,17 +55,27 @@ class ClientGoogleApi extends Store {
     this.init();
   }
 
+  private validateKeys(key: Keys) {
+    Object.entries(key).forEach(([key, value]) => {
+      if (!value) {
+        throw new Error(`Missing ${key} in ClientGoogleApi`);
+      }
+    });
+  }
+
   /**
    * Initializes the OAuth2 client with a stored refresh token if one exists.
    * If a token is found, it will be used to refresh the access token.
    * @returns The OAuth2 client with the refreshed credentials set.
    */
-  private async init(): Promise<OAuth2Client> {
-    const token = this.retrieveToken()?.token;
+  public async init(): Promise<OAuth2Client> {
+    console.log("Initializing OAuth2 client...");
+    const token = this.retrieveToken();
     if (token) {
       this.oauth2Client.setCredentials({ refresh_token: token });
       const { credentials } = await this.oauth2Client.refreshAccessToken();
       this.oauth2Client.setCredentials(credentials);
+      this.storeToken(credentials.refresh_token!);
     }
     return this.oauth2Client;
   }
@@ -89,16 +94,19 @@ class ClientGoogleApi extends Store {
 
   /**
    * Gets an access token using the given authorization code.
-   * @param url The URL the user was redirected to after authorizing.
+   * @param url The URL the user was redirected to after authorizing or Authorization Code.
    * @returns The access token.
    */
   public async getAccessToken(url: string): Promise<string> {
-    const code = new URL(url).searchParams.get("code");
+    const code = url.includes("?code=")
+      ? new URL(url).searchParams.get("code")
+      : url;
     if (!code) {
       throw new Error("Authorization code not found");
     }
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
+    this.storeToken(tokens.refresh_token!);
     return tokens.access_token!;
   }
 
@@ -109,11 +117,20 @@ class ClientGoogleApi extends Store {
    * @param {AnalyticsDataQuery} params.query The query for the report.
    * @returns {Promise<any>} The response from the API.
    */
-  public async getAnalyticsData({ propertyId, query }: AnalyticsData): Promise<any> {
+  public async getAnalyticsData({
+    propertyId,
+    query,
+  }: AnalyticsData): Promise<any> {
     try {
+      const formattedQuery = {
+        dateRanges: { startDate: query.startDate, endDate: query.endDate },
+        metrics: query.metrics.map((metric) => ({ name: metric })),
+        dimensions: query.dimensions.map((metric) => ({ name: metric })),
+      };
+
       const { data } = await axios.post(
         `https://content-analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-        query,
+        formattedQuery,
         {
           headers: {
             Authorization: `Bearer ${this.oauth2Client.credentials.access_token}`,
@@ -172,7 +189,10 @@ class ClientGoogleApi extends Store {
    * @param {{ siteUrl: string; query: SearchConsoleDataQuery; }} params
    * @returns {Promise<any>} The response from the API.
    */
-  public async getSearchConsoleData({ siteUrl, query }: SearchConsoleData): Promise<any> {
+  public async getSearchConsoleData({
+    siteUrl,
+    query,
+  }: SearchConsoleData): Promise<any> {
     try {
       const validSiteUrl = await this.getSearchConsoleSites(siteUrl);
       const encodedUrl = encodeURIComponent(validSiteUrl.siteUrl);
@@ -195,5 +215,3 @@ class ClientGoogleApi extends Store {
     }
   }
 }
-
-export default ClientGoogleApi;

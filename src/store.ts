@@ -8,14 +8,16 @@ export class Store extends Crypto {
     this.filePath = `${__dirname}/token.json`;
   }
   public storeToken(token: string) {
-    const encrypted = this.encrypt(JSON.stringify(token));
+    const encrypted = this.encrypt(token);
     fs.writeFileSync(this.filePath, JSON.stringify(encrypted));
   }
 
   public retrieveToken() {
-    const encryptedData = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
-    return JSON.parse(
-      this.decrypt(encryptedData.encryptedData, encryptedData.iv)
-    );
+    try {
+      const encryptedData = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
+      return this.decrypt(encryptedData.encryptedData, encryptedData.iv)
+    } catch (error) {
+      return null;
+    }
   }
 }
