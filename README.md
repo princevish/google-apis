@@ -17,6 +17,18 @@
 npm install @princevish/google-apis
 ```
 
+## OAuth2
+
+This library comes with an [OAuth2](https://developers.google.com/identity/protocols/OAuth2) client that allows you to retrieve an access token and refreshes the token and retry the request seamlessly if you also provide an `expiry_date` and the token is expired. The basics of Google's OAuth2 implementation is explained on [Google Authorization and Authentication documentation](https://developers.google.com/accounts/docs/OAuth2Login).
+
+In the following examples, you may need a `CLIENT_ID`, `CLIENT_SECRET` and `REDIRECT_URL`. You can find these pieces of information by going to the [Developer Console](https://console.cloud.google.com/), clicking your project > APIs & auth > credentials.
+
+For more information about OAuth2 and how it works, [see here](https://developers.google.com/identity/protocols/OAuth2).
+
+#### A complete OAuth2 example
+
+Let's take a look at a complete example.
+
 ## Usage
 
 ### Example: OAuth 2.0 Setup
