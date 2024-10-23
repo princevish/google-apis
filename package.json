@@ -19,9 +19,18 @@
     "url": "https://github.com/princevish/google-apis/issues"
   },
   "keywords": [
-    "npm",
-    "package",
-    "template"
+    "google",
+    "api",
+    "google api",
+    "google api scrapper",
+    "google analytics",
+    "google search console",
+    "google search console scrapper",
+    "google apis",
+    "google analytics scrapper",
+    "google search console scrapper",
+    "analytics",
+    "search console"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
