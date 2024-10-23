@@ -2,8 +2,7 @@
   "name": "@princevish/google-apis",
   "version": "1.0.0",
   "author": "Prince Vishwakarma <princevworld@gmail.com>",
-  "description": "This NPM Package Template provides a comprehensive starting point for developing and publishing your own NPM packages. It includes a basic setup with essential configurations to help streamline the development process, ensuring your package is ready for the NPM registry with ease and efficiency.",
-  "license": "MIT",
+  "description": "@princevish/google-apis is a Node.js client library that simplifies accessing the latest Google APIs, including Google Analytics and Google Search Console. It provides easy-to-use methods to interact with these services using URL-based queries. The library also includes built-in support for OAuth 2.0 authentication, API keys, and JWT tokens, ensuring secure and efficient interaction with Google APIs",
   "repository": {
     "url": "https://github.com/princevish/google-apis.git",
     "type": "git"
