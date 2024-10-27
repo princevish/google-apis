@@ -1,5 +1,11 @@
 # @princevish/google-apis
 
+## 1.0.3
+
+### Patch Changes
+
+- cc7118a: remove example from build
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@princevish/google-apis",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Prince Vishwakarma <princevworld@gmail.com>",
   "description": "@princevish/google-apis is a Node.js client library that simplifies accessing the latest Google APIs, including Google Analytics and Google Search Console. It provides easy-to-use methods to interact with these services using URL-based queries. The library also includes built-in support for OAuth 2.0 authentication, API keys, and JWT tokens, ensuring secure and efficient interaction with Google APIs",
   "repository": {
