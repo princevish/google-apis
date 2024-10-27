@@ -11,3 +11,4 @@ tsup.config.ts
 /.github
 /bin
 /.husky
+example
